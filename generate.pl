@@ -24,7 +24,7 @@ sub generate_geopoints {
     my $list   = shift;
 
     return join "\n",
-        map { "\\newcommand{\\geo$_}[0]{\\geopoint{$list->{$_}{latitude}}{$list->{$_}{longtitude}}{$list->{$_}{name}}}" } keys %{$list};
+        map {"\\newcommand{\\geo$_}[0]{\\geopoint{$list->{$_}{latitude}}{$list->{$_}{longtitude}}{$list->{$_}{name}}}"} keys %{$list};
 }
 
 sub get_regions_list {
