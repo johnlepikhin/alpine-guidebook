@@ -1,0 +1,20 @@
+{
+    "name" : "Ала-Арча",
+    "geopoints" : {
+        "Lighthouse" : {
+            "latitude" : 42.5334709,
+            "longtitude" : 74.5314918,
+            "name" : "Light house"
+        },
+        "PeakUchitel" : {
+            "latitude" : 42.5377511,
+            "longtitude" : 74.5531805,
+            "name" : "п.~Учитель"
+        },
+        "UchitelUshi" : {
+            "latitude" : 42.5394225,
+            "longtitude" : 74.5481401,
+            "name" : "скальник «Уши»"
+        }
+    }
+}

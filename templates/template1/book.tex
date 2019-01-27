@@ -1,0 +1,21 @@
+
+\documentclass[11pt,fleqn]{book} % Default font size and left-justified equations
+
+\usepackage[T1,T2A]{fontenc}
+\usepackage[english,russian]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{indentfirst}
+\usepackage{hyperref}
+
+\newcommand{\geopoint}[3]{
+  \href{https://www.google.com/maps/@#1,#2,282m/data=!3m1!1e3}{#3
+    (координаты #1, #2)}
+}
+
+\begin{document}
+
+\input{generated.tex}
+
+\routeListall
+
+\end{document}
