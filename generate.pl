@@ -152,7 +152,9 @@ sub get_category {
         my $svg    = shift;
 
         my $png = qq{$global->{destination_directory}/generated${id}.png};
-        system 'inkscape', '-D', '-d', '400', '-z', $svg, '-e', $png;
+        if (! -e $png || (stat $png)[9] < (stat $svg)[9]) {
+            system 'inkscape', '-D', '-d', '400', '-z', $svg, '-e', $png;
+        }
         $id++;
 
         return $png;
