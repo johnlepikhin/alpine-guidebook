@@ -6,3 +6,10 @@
 \hspace{1em}
 
 \routeDescription
+
+\ifthenelse{\equal{\routeUIAAPath}{}}{}{
+  \begin{figure}
+    \includegraphics[width=\textwidth]{\routeUIAAPath}
+    \caption{Маршрут \routeTitle}
+  \end{figure}
+}
