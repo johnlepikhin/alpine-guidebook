@@ -7,12 +7,13 @@
 \usepackage{indentfirst}
 \usepackage{graphicx}
 \usepackage{color}
-\PassOptionsToPackage{hyphens}{url}\usepackage[colorlinks]{hyperref}
+\usepackage{xcolor}
+\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
 
 \usepackage{alpineroutes}
 
 \renewcommand{\geopoint}[3]{ \href{https://www.google.com/maps?q=#1,#2}{#3
-    (координаты #1, #2)} }
+    \textcolor{gray}{(координаты #1, #2)}}}
 
 \begin{document}
 

@@ -24,11 +24,9 @@ sub generate_geopoints {
     my $list   = shift;
 
     return join "\n\n", map {
-        "\\newcommand{\\geo$_}[1][]{
-  \\geopoint{$list->{$_}{latitude}}{$list->{$_}{longtitude}}{
-    \\ifthenelse{\\equal{##1}{}}{$list->{$_}{name}}{##1}
-  }
-}"
+        sprintf "\\newcommand{\\geo%s}[1][]{
+  \\geopoint{%.7f}{%.7f}{
+    \\ifthenelse{\\equal{##1}{}}{$list->{$_}{name}}{##1}}}", $_, $list->{$_}{latitude}, $list->{$_}{longtitude}
     } keys %{$list};
 }
 
