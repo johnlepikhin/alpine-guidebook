@@ -12,6 +12,8 @@ use JSON qw(from_json);
 use File::Basename;
 use File::Copy;
 
+no if $] >= 5.018, warnings => "experimental::smartmatch";
+
 sub msg {
     my $caller = ( caller 1 )[3] // '[no_caller]';
 
@@ -20,8 +22,7 @@ sub msg {
 }
 
 sub generate_geopoints {
-    my $global = shift;
-    my $list   = shift;
+    my $list = shift;
 
     return join "\n\n", map {
         sprintf "\\newcommand{\\geo%s}[1][]{
@@ -31,12 +32,12 @@ sub generate_geopoints {
 }
 
 sub get_regions_list {
-    my $global = shift;
+    my $config = shift;
 
     my %r;
 
 REGION:
-    foreach my $info_file ( glob "$global->{source_directory}/*/info.json" ) {
+    foreach my $info_file ( glob "$config->{source_directory}/*/info.json" ) {
         my $info = eval { from_json( read_file($info_file), { utf8 => 1 } ) };
         if ( ! defined $info ) {
             croak "cannot read $info_file: $@";
@@ -53,7 +54,7 @@ REGION:
         $info->{info_file}     = $info_file;
         $info->{region}        = ( split m{/}, $info_file )[-2];
         $info->{path}          = dirname $info_file;
-        $info->{tex_geopoints} = generate_geopoints( $global, $info->{geopoints} // {} );
+        $info->{tex_geopoints} = generate_geopoints( $info->{geopoints} // {} );
 
         $r{ $info->{region} } = $info;
     }
@@ -62,11 +63,11 @@ REGION:
 }
 
 sub get_routes_list {
-    my $global = shift;
+    my $config = shift;
 
     my @r;
 ROUTE:
-    foreach my $info_file ( glob "$global->{source_directory}/*/routes/*/info.json" ) {
+    foreach my $info_file ( glob "$config->{source_directory}/*/routes/*/info.json" ) {
         my $info = eval { from_json( read_file($info_file), { utf8 => 1 } ) };
         if ( ! defined $info ) {
             croak "cannot read $info_file: $@";
@@ -86,14 +87,14 @@ ROUTE:
         push @r, $info;
     }
 
-    return @r;
+    return \@r;
 }
 
 sub get_category {
     my $global   = shift;
     my $category = shift;
 
-    if ($global->{category_system} eq 'russian') {
+    if ( $global->{config}{category_system} eq 'russian' ) {
         return $category;
     }
 
@@ -139,7 +140,7 @@ sub get_category {
         },
     };
 
-    return $transition->{ $global->{category_system} }{$category} // "? (rus: $category)";
+    return $transition->{ $global->{config}{category_system} }{$category} // "? (rus: $category)";
 }
 
 {
@@ -149,8 +150,8 @@ sub get_category {
         my $global = shift;
         my $svg    = shift;
 
-        my $png = qq{$global->{destination_directory}/generated${id}.png};
-        if (! -e $png || (stat $png)[9] < (stat $svg)[9]) {
+        my $png = qq{$global->{config}{destination_directory}/generated${id}.png};
+        if ( ! -e $png || ( stat $png )[9] < ( stat $svg )[9] ) {
             system 'inkscape', '-D', '-d', '400', '-z', $svg, '-e', $png;
         }
         $id++;
@@ -159,59 +160,177 @@ sub get_category {
     }
 }
 
-binmode STDOUT, ':encoding(utf-8)';
-
-my %global = (
-    source_directory      => q{./regions},
-    destination_directory => '/tmp/book',
-    template_directory    => './templates/template1',
-    lists                 => {
-        all => {
-            routes_filter  => sub {1},
-            route_template => 'route-template1.tex',
+{
+    my %config_schema = (
+        source_directory => {
+            cmd_alters  => 1,
+            default     => q{./regions},
+            description => q{Source directory to get regions/routes list from},
+            required    => 1,
         },
-    },
-    category_system => 'russian',
-);
+        template_directory => {
+            cmd_alters  => 1,
+            default     => undef,
+            description => q{Path to template to be used},
+            required    => 1,
+        },
+        destination_directory => {
+            cmd_alters  => 1,
+            default     => undef,
+            description => q{Destination directory, where guidebook and all LaTeX files will be created},
+            required    => 1,
+        },
+        lists => {
+            cmd_alters => 0,
+            default    => {
+                all => {
+                    routes_filter  => sub {1},
+                    route_template => 'route-template1.tex',
+                },
+            },
+            description => q{Configuration of the list. Only Perl code at the moment, sorry},
+            required    => 1,
+        },
+        category_system => {
+            cmd_alters  => 1,
+            default     => q{russian},
+            description => q{Difficulty grading system. Known values: 'english', 'french', 'german', 'russian'},
+            required    => 1,
+        } );
 
-my $regions = get_regions_list( \%global );
+    sub show_help {
+        print <<'END'
+  config=/path/to/config.pl
+    Path to configuration file. At least 'lists' must be defined, see example-config.pl
 
-my @routes = get_routes_list( \%global );
-msg "Found routes: ";
-foreach (@routes) {
-    msg " - $_->{region} : $_->{category} $_->{title}";
+END
+            ;
+        foreach ( sort keys %config_schema ) {
+            my $default = '[no default value]';
+            if ( $config_schema{$_}{default} && ref $config_schema{$_}{default} eq q{} ) {
+                $default = "default value: '$config_schema{$_}{default}'";
+            }
+            my $addition = '';
+            if ( $config_schema{$_}{cmd_alters} ) {
+                $addition .= "\n    Can be changed by command line argument: $_=new_value";
+            }
+            print <<"END"
+  $_=...   $default
+    $config_schema{$_}{description}$addition
+
+END
+        }
+    }
+
+    sub init {
+        if ( '-h' ~~ @ARGV || '--help' ~~ @ARGV || 'help' ~~ @ARGV || ! @ARGV ) {
+            show_help();
+            exit 0;
+        }
+
+        my $config;
+
+        my %cmd_params = map {
+            if (m{^([^=]+)=(.*)}) {
+                ( $1, $2 );
+            } else {
+                ();
+            }
+        } @ARGV;
+
+        foreach ( keys %config_schema ) {
+            if ( defined $config_schema{$_}{default} ) {
+                $config->{$_} = $config_schema{$_}{default};
+            }
+        }
+
+        if ( exists $cmd_params{config} ) {
+            my $result = eval {
+                my $content     = read_file( $cmd_params{config} );
+                my $read_config = eval $content;
+                if ($@) {
+                    die $@;
+                }
+                foreach ( sort keys %{$read_config} ) {
+                    $config->{$_} = $read_config->{$_};
+                }
+                1;
+            };
+            if ( ! $result ) {
+                croak "Cannot parse config '$cmd_params{config}': $@";
+            }
+
+            foreach ( sort keys %{$config} ) {
+                if ( ! exists $config_schema{$_} ) {
+                    croak "Unexpected config parameter: '$_'";
+                }
+            }
+
+            delete $cmd_params{config};
+        }
+
+        foreach ( sort keys %cmd_params ) {
+            if ( ! exists $config_schema{$_} ) {
+                croak "Unexpected command line parameter: '$_'";
+            }
+            if ( ! $config_schema{$_}{cmd_alters} ) {
+                croak "Parameter '$_' cannot be altered by command line";
+            }
+            $config->{$_} = $cmd_params{$_};
+        }
+
+        foreach ( sort keys %config_schema ) {
+            if ( $config_schema{$_}{required} && ! exists $config->{$_} ) {
+                croak "Config parameter '$_' is required";
+            }
+        }
+
+        my %global = (
+            config  => $config,
+            regions => get_regions_list($config),
+            routes  => get_routes_list($config),
+        );
+
+        return \%global;
+    }
 }
 
-mkdir $global{destination_directory};
+binmode STDOUT, ':encoding(utf-8)';
+
+my $global = init();
+
+if ( ! -e $global->{config}{destination_directory} && ! mkdir $global->{config}{destination_directory} ) {
+    croak "Cannot create destination direcotry: $!";
+}
 
 my @tex_route_lists;
-while ( my ( $lname, $list ) = each %{ $global{lists} } ) {
+while ( my ( $lname, $list ) = each %{ $global->{config}{lists} } ) {
     my @list_routes = grep {
         ( $list->{routes_filter} // sub {1} )->($_)
-    } @routes;
-    my $route_template = decode( 'utf-8', read_file("$global{template_directory}/$list->{route_template}") );
+    } @{ $global->{routes} };
+    my $route_template = decode( 'utf-8', read_file("$global->{config}{template_directory}/$list->{route_template}") );
 ## no critic (BuiltinFunctions::ProhibitComplexMappings)
     my $content = join "\n", map {
 ## use critic
         my $description = decode( 'utf-8', read_file("$_->{path}/description.tex") );
-        my $category = get_category( \%global, $_->{category} );
+        my $category = get_category( $global, $_->{category} );
         my $peaks = join q{, }, @{ $_->{peak} };
 
         my $uiaa = '';
         if ( -f "$_->{path}/uiaa.svg" ) {
-            $uiaa = pdf_of_png( \%global, "$_->{path}/uiaa.svg" );
+            $uiaa = pdf_of_png( $global, "$_->{path}/uiaa.svg" );
         }
 
         <<"END"
 
 {
-    $regions->{$_->{region}}{tex_geopoints}
+    $global->{regions}{$_->{region}}{tex_geopoints}
     \\newcommand{\\routeTitle}[0]{$_->{title}}
     \\newcommand{\\routePeak}[0]{$peaks}
     \\newcommand{\\routeCategory}[0]{$category}
     \\newcommand{\\routeType}[0]{$_->{type}}
     \\newcommand{\\routeName}[0]{$_->{name}}
-    \\newcommand{\\routeRegionName}[0]{$regions->{$_->{region}}{name}}
+    \\newcommand{\\routeRegionName}[0]{$global->{regions}{$_->{region}}{name}}
     \\newcommand{\\routeEquipment}[0]{$_->{equipment}}
     \\newcommand{\\routeDescription}[0]{$description}
     \\newcommand{\\routeUIAAPath}[0]{$uiaa}
@@ -227,7 +346,7 @@ END
 }
 
 write_file(
-    "$global{destination_directory}/alpineroutes.sty",
+    "$global->{config}{destination_directory}/alpineroutes.sty",
     encode(
         'utf-8', <<"END"
 \\NeedsTeXFormat{LaTeX2e}[1994/06/01]
@@ -243,5 +362,5 @@ write_file(
 END
     ) );
 
-copy( "$global{template_directory}/book.tex", "$global{destination_directory}/book.tex" );
-system "cd " . ( quotemeta $global{destination_directory} ) . "; pdflatex -file-line-error book.tex";
+copy( "$global->{config}{template_directory}/book.tex", "$global->{config}{destination_directory}/book.tex" );
+system "cd " . ( quotemeta $global->{config}{destination_directory} ) . "; pdflatex -file-line-error book.tex";
