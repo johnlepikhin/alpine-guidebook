@@ -9,12 +9,25 @@
 \usepackage{color}
 \usepackage{xcolor}
 \usepackage{numprint}
+\usepackage{mdframed}
 \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
 
 \usepackage{alpineroutes}
 
+\renewcommand{\length}[1]{длина #1~м}
+
 \renewcommand{\geopoint}[3]{ \href{https://www.google.com/maps?q=#1,#2}{#3
     \textcolor{gray}{(координаты \nprounddigits{6}\numprint{#1}, \numprint{#2})}}}
+
+\newmdenv[]{MdEnv}
+
+\renewcommand{\routeSection}[2]{
+  \begin{MdEnv}[topline=false,bottomline=false,rightline=false,linewidth=2pt]
+    \textbf{
+      Участок #1:
+    } #2
+  \end{MdEnv}
+}
 
 \begin{document}
 

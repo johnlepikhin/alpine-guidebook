@@ -361,6 +361,10 @@ write_file(
 \\newcommand{\\geopoint}[3]{\\href{https://www.google.com/maps?q=#1,#2}{#3}}
 \\newcommand{\\routeKey}[1]{\\textbf{#1}}
 
+\\newcommand{\\routeSection}[2]{\\textbf{Section #1} #2}
+
+\\newcommand{\\length}[1]{length #1m}
+
 @tex_route_lists
 END
     ) );
