@@ -11,6 +11,7 @@ use File::Slurp qw(read_file write_file);
 use JSON qw(from_json);
 use File::Basename;
 use File::Copy;
+use Digest::MD5 qw(md5_hex);
 
 no if $] >= 5.018, warnings => "experimental::smartmatch";
 
@@ -144,17 +145,19 @@ sub get_category {
 }
 
 {
-    my $id = 0;
+    my $images_dpi = 200;
 
     sub pdf_of_png {
         my $global = shift;
         my $svg    = shift;
 
-        my $png = qq{$global->{config}{destination_directory}/generated${id}.png};
-        # if ( ! -e $png || ( stat $png )[9] < ( stat $svg )[9] ) {
-            system 'inkscape', '-D', '-d', '400', '-z', $svg, '-e', $png;
-        # }
-        $id++;
+        my $q_dpi   = quotemeta $images_dpi;
+        my $q_svg   = quotemeta $svg;
+        my $command = "inkscape -D -d $q_dpi -z $q_svg -e ";
+        my $png     = "$global->{config}{destination_directory}/" . ( md5_hex $command) . ".png";
+        if ( ! -e $png || ( stat $png )[9] < ( stat $svg )[9] ) {
+            system $command . quotemeta $png;
+        }
 
         return $png;
     }
