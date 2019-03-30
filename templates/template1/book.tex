@@ -10,6 +10,8 @@
 \usepackage{xcolor}
 \usepackage{numprint}
 \usepackage{mdframed}
+\usepackage{gensymb}
+\usepackage{glossaries}
 \usepackage[section]{placeins}
 
 \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
@@ -35,9 +37,72 @@
 \date{Версия от \today}
 \author{под авторством сообщества}
 
-\begin{document}
+\makeglossaries
 
-\maketitle
+\newglossaryentry{uiaaI}
+{
+  name={I~к.с.},
+  description={Первая категория сложности лазания в системе UIAA.
+    Самый легкий вид скального лазания. Руки используются только для
+    баланса. Новички должны использовать веревку},
+  sort=uiaa1
+}
+
+\newglossaryentry{uiaaII}
+{
+  name={II~к.с.},
+  description={Вторая категория сложности лазания в системе UIAA.
+    Простейшие комбинации с использование рук и ног. Лазание с
+    использованием трех точек опоры},
+  sort=uiaa2
+}
+
+\newglossaryentry{uiaaIII}
+{
+  name={III~к.с.},
+  description={Третья категория сложности лазания в системе UIAA.
+    Вплоть до вертикальных стенок, иногда требуется использование силы
+    при лазании},
+  sort=uiaa3
+}
+
+\newglossaryentry{uiaaIV}
+{
+  name={IV~к.с.},
+  description={Четвертая категория сложности лазания в системе UIAA.
+    Не слишком частые, иногда неудобные зацепы. Прохождение требует
+    некоторой тренированности},
+  sort=uiaa4
+}
+
+\newglossaryentry{uiaaV}
+{
+  name={V~к.с.},
+  description={Пятая категория сложности лазания в системе UIAA.
+    Редкие зацепы, требует аккуратного лазания, возникает желание
+    осмотреть участок перед прохождением},
+  sort=uiaa5
+}
+
+\newglossaryentry{uiaaVI}
+{
+  name={VI~к.с.},
+  description={Шестая категория сложности лазания в системе UIAA.
+    Редкие зацепы, требующие специальных скалолазных движений и
+    укрепленных предплечий при прохождении},
+  sort=uiaa6
+}  
+
+\newglossaryentry{uiaaVII}
+{
+  name={VII~к.с.},
+  description={Седьмая категория сложности лазания в системе UIAA.
+    Редкие и неудобные зацепы. Прохождение участка требует длительных
+    скалолазных тренировок, отличную силу пальцев, растяжку, чувство баланса},
+  sort=uiaa7
+}
+
+\begin{document}
 
 \tableofcontents
 
@@ -136,5 +201,9 @@ requests, можно присылать тексты/комментарии на
 именно~--- CC by-SA.
 
 Проект размещен в репозитарии на \gitRepo.
+
+\clearpage
+ 
+\printglossaries
 
 \end{document}
