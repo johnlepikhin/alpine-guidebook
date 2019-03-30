@@ -5,11 +5,11 @@
 
 \hspace{1em}
 
-\routeDescription
-
 \ifthenelse{\equal{\routeUIAAPath}{}}{}{
-  \begin{figure}
+  \begin{figure}[!htb]
     \includegraphics[width=\textwidth]{\routeUIAAPath}
-    \caption{Маршрут \routeTitle}
+    \caption{Маршрут \routeTitle~(\routeCategory)}
   \end{figure}
 }
+
+\routeDescription
