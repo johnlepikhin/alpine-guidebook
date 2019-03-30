@@ -318,6 +318,7 @@ while ( my ( $lname, $list ) = each %{ $global->{config}{lists} } ) {
         my $description = decode( 'utf-8', read_file("$_->{path}/description.tex") );
         my $category = get_category( $global, $_->{category} );
         my $peaks = join q{, }, @{ $_->{peak} };
+        my $authors = join q{, }, sort @{ $_->{authors} // []};
 
         my $uiaa = '';
         if ( -f "$_->{path}/uiaa.svg" ) {
@@ -337,6 +338,7 @@ while ( my ( $lname, $list ) = each %{ $global->{config}{lists} } ) {
     \\newcommand{\\routeEquipment}[0]{$_->{equipment}}
     \\newcommand{\\routeDescription}[0]{$description}
     \\newcommand{\\routeUIAAPath}[0]{$uiaa}
+    \\newcommand{\\routeAuthors}[0]{$authors}
 
 
     $route_template
