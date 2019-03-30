@@ -372,4 +372,4 @@ END
     ) );
 
 copy( "$global->{config}{template_directory}/book.tex", "$global->{config}{destination_directory}/book.tex" );
-system "cd " . ( quotemeta $global->{config}{destination_directory} ) . "; pdflatex -halt-on-error -file-line-error book.tex";
+system "cd " . ( quotemeta $global->{config}{destination_directory} ) . "; makeglossaries book.glo; pdflatex -halt-on-error -file-line-error book.tex";
