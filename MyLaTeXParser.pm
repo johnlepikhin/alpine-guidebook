@@ -131,7 +131,6 @@ sub parse {
             $min    = 0;
             $offset = $token->{startpos};
         }
-        print "offset=$offset\n";
         my $context = substr $s, $min, $error_context * 2;
         substr $context, $offset, 1, '<<<' . ( substr $context, $offset, 1 ) . '>>>';
 

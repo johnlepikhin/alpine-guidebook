@@ -340,7 +340,6 @@ while ( my ( $lname, $list ) = each %{ $global->{config}{lists} } ) {
         my $geopoints_mapper = sub {
             my $command = shift;
 
-            print "???? $command->{command}\n";
             if ( my ($geoname) = $command->{command} =~ m{^geo(.+)} ) {
                 if ( exists $region->{geopoints}{$geoname} ) {
                     my $point = $region->{geopoints}{$geoname};
