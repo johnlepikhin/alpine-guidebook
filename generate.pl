@@ -392,4 +392,6 @@ write_file( "$global->{config}{destination_directory}/book.tex", encode( 'utf-8'
 # END
 #     ) );
 
-system "cd " . ( quotemeta $global->{config}{destination_directory} ) . "; makeglossaries book.glo; pdflatex -halt-on-error -file-line-error book.tex";
+system "cd "
+    . ( quotemeta $global->{config}{destination_directory} )
+    . "; makeglossaries book.glo; pdflatex -halt-on-error -file-line-error book.tex";
