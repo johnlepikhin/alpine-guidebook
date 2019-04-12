@@ -335,27 +335,63 @@ while ( my ( $lname, $list ) = each %{ $global->{config}{lists} } ) {
             $uiaa = pdf_of_png( $global, "$route->{path}/uiaa.svg" );
         }
 
-        my $doc = "{
-    $global->{regions}{$route->{region}}{tex_geopoints}
+        my $region = $global->{regions}{ $route->{region} };
 
-$route_template
-}";
+        my $geopoints_mapper = sub {
+            my $command = shift;
+
+            print "???? $command->{command}\n";
+            if ( my ($geoname) = $command->{command} =~ m{^geo(.+)} ) {
+                if ( exists $region->{geopoints}{$geoname} ) {
+                    my $point = $region->{geopoints}{$geoname};
+                    my $name  = $point->{name};
+                    if ( defined $command->{args} && @{ $command->{args} } && @{ $command->{args}[0]{content} } ) {
+                        $name = MyLaTeXPrinter::latex( document => $command->{args}[0]{content} );
+                    }
+                    return 1,
+                        MyLaTeX::command(
+                        command => 'geopoint',
+                        args    => [
+                            { type => 'brace', content => [ MyLaTeX::text( sprintf '%.7f', $point->{latitude} ) ], },
+                            { type => 'brace', content => [ MyLaTeX::text( sprintf '%.7f', $point->{longtitude} ) ], },
+                            { type => 'brace', content => [ MyLaTeX::text( $point->{altitude} ) ], },
+                            { type => 'brace', content => [ MyLaTeX::text($name) ], },
+                        ] );
+                }
+            }
+
+            return 0;
+        };
+
+        my $mapper = sub {
+            my $doc = shift;
+
+            return MyLaTeX::map_commands(
+                list => $doc,
+                map  => {
+                    routeTitle       => sub { MyLaTeX::text( $route->{title} ) },
+                    routePeak        => sub { MyLaTeX::text($peaks) },
+                    routeCategory    => sub { MyLaTeX::text($category) },
+                    routeType        => sub { MyLaTeX::text( $route->{type} ) },
+                    routeName        => sub { MyLaTeX::text( $route->{name} ) },
+                    routeRegionName  => sub { MyLaTeX::text( $region->{name} ) },
+                    routeEquipment   => sub { MyLaTeX::text( $route->{equipment} ) },
+                    routeAuthors     => sub { MyLaTeX::text( join q{, }, sort @{ $route->{authors} } ) },
+                    routeDescription => sub { MyLaTeX::text($description) },
+                    routeUIAAPath    => sub { MyLaTeX::text($uiaa) },
+                },
+                unified => $geopoints_mapper
+            );
+        };
+
+        $description = MyLaTeXParser::parse( id => "List $lname, route '$route->{title}', description", document => $description );
+        $description = $mapper->($description);
+        $description = MyLaTeXPrinter::latex( document => $description );
+
+        my $doc = $route_template;
 
         $doc = MyLaTeXParser::parse( id => "List $lname, route '$route->{title}'", document => $doc );
-        $doc = MyLaTeX::map_commands(
-            list => $doc,
-            map  => {
-                routeTitle       => sub { MyLaTeX::text( $route->{title} ) },
-                routePeak        => sub { MyLaTeX::text($peaks) },
-                routeCategory    => sub { MyLaTeX::text($category) },
-                routeType        => sub { MyLaTeX::text( $route->{type} ) },
-                routeName        => sub { MyLaTeX::text( $route->{name} ) },
-                routeRegionName  => sub { MyLaTeX::text( $global->{regions}{ $route->{region} }{name} ) },
-                routeEquipment   => sub { MyLaTeX::text( $route->{equipment} ) },
-                routeAuthors     => sub { MyLaTeX::text( join q{, }, sort @{ $route->{authors} } ) },
-                routeDescription => sub { MyLaTeX::text($description) },
-                routeUIAAPath    => sub { MyLaTeX::text($uiaa) },
-            } );
+        $doc = $mapper->($doc);
 
         $content .= MyLaTeXPrinter::latex( document => $doc );
     }
@@ -367,7 +403,10 @@ $route_template
 
 my $book = read_file( "$global->{config}{template_directory}/book.tex", binmode => ':utf8' );
 $book = MyLaTeXParser::parse( document => $book );
-$book = MyLaTeX::map_commands( list => $book, map => \%commands_map );
+$book = MyLaTeX::map_commands(
+    list => $book,
+    map  => \%commands_map
+);
 
 write_file( "$global->{config}{destination_directory}/book.tex", encode( 'utf-8', MyLaTeXPrinter::latex( document => $book ) ) );
 

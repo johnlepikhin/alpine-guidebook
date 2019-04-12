@@ -11,20 +11,19 @@ sub text {
 
 sub command {
     my $command = get_arg command => @_;
-    my $opts = get_arg_opt opts => undef, @_;
     my $args = get_arg_opt args => undef, @_;
 
     return {
         type    => 'COMMAND',
         command => $command,
-        opts    => $opts,
         args    => $args,
     };
 }
 
 sub map_commands {
-    my $map  = get_arg map  => @_;
-    my $list = get_arg list => @_;
+    my $map     = get_arg map         => @_;
+    my $unified = get_arg_opt unified => sub {0}, @_;
+    my $list    = get_arg list        => @_;
     my %args = @_;
 
     my $mapper = sub {
@@ -34,10 +33,15 @@ sub map_commands {
             $node->{children} = map_commands( %args, list => $node->{children} );
         }
 
-        if ( $node->{type} eq 'COMMAND') {
-            if (exists $map->{ $node->{command} } ) {
+        if ( $node->{type} eq 'COMMAND' ) {
+            if ( exists $map->{ $node->{command} } ) {
                 return $map->{ $node->{command} }($node);
             }
+            my ( $changed, @new_content ) = $unified->($node);
+            if ($changed) {
+                return @new_content;
+            }
+
             foreach ( @{ $node->{args} } ) {
                 $_->{content} = map_commands( %args, list => $_->{content} );
             }
