@@ -352,6 +352,7 @@ $route_template
                 routeName        => sub { MyLaTeX::text( $route->{name} ) },
                 routeRegionName  => sub { MyLaTeX::text( $global->{regions}{ $route->{region} }{name} ) },
                 routeEquipment   => sub { MyLaTeX::text( $route->{equipment} ) },
+                routeAuthors     => sub { MyLaTeX::text( join q{, }, sort @{ $route->{authors} } ) },
                 routeDescription => sub { MyLaTeX::text($description) },
                 routeUIAAPath    => sub { MyLaTeX::text($uiaa) },
             } );
