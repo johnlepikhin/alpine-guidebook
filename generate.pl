@@ -149,9 +149,7 @@ $book = MyLaTeX::map_commands(
     map  => \%commands_map
 );
 
-system "cd "
-    . ( quotemeta $global->{config}{destination_directory} )
-    . "; rm -f book.*";
+system "cd " . ( quotemeta $global->{config}{destination_directory} ) . "; rm -f book.*";
 
 write_file( "$global->{config}{destination_directory}/book.tex", encode( 'utf-8', MyLaTeXPrinter::latex( document => $book ) ) );
 
