@@ -69,6 +69,8 @@ while ( my ( $lname, $list ) = each %{ $global->{config}{lists} } ) {
     my $content = q{};
     foreach my $route (@list_routes) {
         my $description = decode( 'utf-8', read_file("$route->{path}/description.tex") );
+        $description = MyLaTeXParser::parse( id => "$route->{path}/description.tex", document => $description );
+
         my $category = AG::Categories::get( $global, $route->{category} );
         my $peaks = join q{, }, @{ $route->{peak} };
 
@@ -125,7 +127,6 @@ while ( my ( $lname, $list ) = each %{ $global->{config}{lists} } ) {
             );
         };
 
-        $description = MyLaTeXParser::parse( id => "List $lname, route '$route->{title}', description", document => $description );
         $description = $mapper->($description);
         $description = MyLaTeXPrinter::latex( document => $description );
 
