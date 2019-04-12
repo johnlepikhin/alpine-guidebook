@@ -95,7 +95,7 @@ while ( my ( $lname, $list ) = each %{ $global->{config}{lists} } ) {
                         args    => [
                             { type => 'brace', content => [ MyLaTeX::text( sprintf '%.7f', $point->{latitude} ) ], },
                             { type => 'brace', content => [ MyLaTeX::text( sprintf '%.7f', $point->{longtitude} ) ], },
-                            { type => 'brace', content => [ MyLaTeX::text( $point->{altitude} ) ], },
+                            { type => 'brace', content => [ MyLaTeX::text( $point->{altitude} // q{} ) ], },
                             { type => 'brace', content => [ MyLaTeX::text($name) ], },
                         ] );
                 }
