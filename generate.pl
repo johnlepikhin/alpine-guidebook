@@ -100,6 +100,7 @@ while ( my ( $lname, $list ) = each %{ $global->{config}{lists} } ) {
                             { type => 'brace', content => [ TeX::Processor::Make::text( sprintf '%.7f', $point->{longtitude} ) ], },
                             { type => 'brace', content => [ TeX::Processor::Make::text( $point->{altitude} // q{} ) ], },
                             { type => 'brace', content => [ TeX::Processor::Make::text($name) ], },
+                            { type => 'brace', content => [ TeX::Processor::Make::text($point->{name}) ], },
                         ] );
                 }
             }

@@ -19,10 +19,12 @@
 
 \newcommand{\length}[1]{длина #1~м}
 
-\newcommand{\geopoint}[4]{#4
-  \footnote{
+\newcommand{\geopoint}[5]{#4\footnote{
     \href{https://www.google.com/maps?q=#1,#2}
-    {#4: \ifthenelse{\equal{#3}{}}{}{высота~\numprint{#3}~м, }координаты~\nprounddigits{6}\numprint{#1}, \numprint{#2}}
+    {\ifthenelse{\equal{#5}{}}{#4}{#5}:
+      \ifthenelse{\equal{#3}{}}{}{высота~\numprint{#3}~м, }
+      координаты~\nprounddigits{6}\numprint{#1}, \numprint{#2}
+    }
   }
 }
 
