@@ -1,13 +1,16 @@
-\section{\routeTitle}
-\noindent \textbf{Категория сложности:} \routeCategory (\routeType)\\
-\noindent \textbf{Название в классификаторе:} «\routeName»\\
-\noindent \textbf{Рекомендуемое железо:} \routeEquipment
+\begin{samepage}
+  \section{\routeTitle}
+  \noindent \textbf{Категория сложности:} \routeCategory (\routeType)\\
+  \noindent \textbf{Название в классификаторе:} «\routeName»\\
+  \noindent \textbf{Рекомендуемое железо:} \routeEquipment
 
-\hspace{1em}
+  \hspace{1em}
+\end{samepage}
 
 \ifthenelse{\equal{\routeUIAAPath}{}}{}{
   \begin{figure}[!htb]
-    \includegraphics[width=\textwidth]{\routeUIAAPath}
+    \centering
+    \includegraphics[width=0.95\textwidth]{\routeUIAAPath}
     \caption{Маршрут \routeTitle~(\routeCategory)}
   \end{figure}
 }
