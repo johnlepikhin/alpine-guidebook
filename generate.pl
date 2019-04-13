@@ -156,6 +156,8 @@ system "cd " . ( quotemeta $global->{config}{destination_directory} ) . "; rm -f
 
 write_file( "$global->{config}{destination_directory}/book.tex", encode( 'utf-8', TeX::Processor::Printer::latex( document => $book ) ) );
 
+my $iter_compile = q{pdflatex -halt-on-error -file-line-error book.tex};
+
 system "cd "
     . ( quotemeta $global->{config}{destination_directory} )
-    . "; makeglossaries book.glo; pdflatex -halt-on-error -file-line-error book.tex && pdflatex -halt-on-error -file-line-error book.tex";
+    . "; $iter_compile && makeglossaries book.glo && $iter_compile"
