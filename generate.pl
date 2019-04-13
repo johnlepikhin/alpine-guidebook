@@ -16,9 +16,10 @@ use Digest::MD5 qw(md5_hex);
 use AG::Config;
 use AG::Categories;
 
-use MyLaTeXParser;
-use MyLaTeXPrinter;
-use MyLaTeX;
+use TeX::Processor::Parser;
+use TeX::Processor::Printer;
+use TeX::Processor::Make;
+use TeX::Processor;
 
 no if $] >= 5.018, warnings => "experimental::smartmatch";
 
@@ -69,7 +70,7 @@ while ( my ( $lname, $list ) = each %{ $global->{config}{lists} } ) {
     my $content = q{};
     foreach my $route (@list_routes) {
         my $description = decode( 'utf-8', read_file("$route->{path}/description.tex") );
-        $description = MyLaTeXParser::parse( id => "$route->{path}/description.tex", document => $description );
+        $description = TeX::Processor::Parser::parse( id => "$route->{path}/description.tex", document => $description );
 
         my $category = AG::Categories::get( $global, $route->{category} );
         my $peaks = join q{, }, @{ $route->{peak} };
@@ -89,16 +90,16 @@ while ( my ( $lname, $list ) = each %{ $global->{config}{lists} } ) {
                     my $point = $region->{geopoints}{$geoname};
                     my $name  = $point->{name};
                     if ( defined $command->{args} && @{ $command->{args} } && @{ $command->{args}[0]{content} } ) {
-                        $name = MyLaTeXPrinter::latex( document => $command->{args}[0]{content} );
+                        $name = TeX::Processor::Printer::latex( document => $command->{args}[0]{content} );
                     }
                     return 1,
-                        MyLaTeX::command(
+                        TeX::Processor::Make::command(
                         command => 'geopoint',
                         args    => [
-                            { type => 'brace', content => [ MyLaTeX::text( sprintf '%.7f', $point->{latitude} ) ], },
-                            { type => 'brace', content => [ MyLaTeX::text( sprintf '%.7f', $point->{longtitude} ) ], },
-                            { type => 'brace', content => [ MyLaTeX::text( $point->{altitude} // q{} ) ], },
-                            { type => 'brace', content => [ MyLaTeX::text($name) ], },
+                            { type => 'brace', content => [ TeX::Processor::Make::text( sprintf '%.7f', $point->{latitude} ) ], },
+                            { type => 'brace', content => [ TeX::Processor::Make::text( sprintf '%.7f', $point->{longtitude} ) ], },
+                            { type => 'brace', content => [ TeX::Processor::Make::text( $point->{altitude} // q{} ) ], },
+                            { type => 'brace', content => [ TeX::Processor::Make::text($name) ], },
                         ] );
                 }
             }
@@ -109,50 +110,50 @@ while ( my ( $lname, $list ) = each %{ $global->{config}{lists} } ) {
         my $mapper = sub {
             my $doc = shift;
 
-            return MyLaTeX::map_commands(
+            return TeX::Processor::map_commands(
                 list => $doc,
                 map  => {
-                    routeTitle       => sub { MyLaTeX::text( $route->{title} ) },
-                    routePeak        => sub { MyLaTeX::text($peaks) },
-                    routeCategory    => sub { MyLaTeX::text($category) },
-                    routeType        => sub { MyLaTeX::text( $route->{type} ) },
-                    routeName        => sub { MyLaTeX::text( $route->{name} ) },
-                    routeRegionName  => sub { MyLaTeX::text( $region->{name} ) },
-                    routeEquipment   => sub { MyLaTeX::text( $route->{equipment} ) },
-                    routeAuthors     => sub { MyLaTeX::text( join q{, }, sort @{ $route->{authors} } ) },
-                    routeDescription => sub { MyLaTeX::text($description) },
-                    routeUIAAPath    => sub { MyLaTeX::text($uiaa) },
+                    routeTitle       => sub { TeX::Processor::Make::text( $route->{title} ) },
+                    routePeak        => sub { TeX::Processor::Make::text($peaks) },
+                    routeCategory    => sub { TeX::Processor::Make::text($category) },
+                    routeType        => sub { TeX::Processor::Make::text( $route->{type} ) },
+                    routeName        => sub { TeX::Processor::Make::text( $route->{name} ) },
+                    routeRegionName  => sub { TeX::Processor::Make::text( $region->{name} ) },
+                    routeEquipment   => sub { TeX::Processor::Make::text( $route->{equipment} ) },
+                    routeAuthors     => sub { TeX::Processor::Make::text( join q{, }, sort @{ $route->{authors} } ) },
+                    routeDescription => sub { TeX::Processor::Make::text($description) },
+                    routeUIAAPath    => sub { TeX::Processor::Make::text($uiaa) },
                 },
                 unified => $geopoints_mapper
             );
         };
 
         $description = $mapper->($description);
-        $description = MyLaTeXPrinter::latex( document => $description );
+        $description = TeX::Processor::Printer::latex( document => $description );
 
         my $doc = $route_template;
 
-        $doc = MyLaTeXParser::parse( id => "List $lname, route '$route->{title}'", document => $doc );
+        $doc = TeX::Processor::Parser::parse( id => "List $lname, route '$route->{title}'", document => $doc );
         $doc = $mapper->($doc);
 
-        $content .= MyLaTeXPrinter::latex( document => $doc );
+        $content .= TeX::Processor::Printer::latex( document => $doc );
     }
 
-    my $doc = MyLaTeXParser::parse( id => "List $lname", document => $content, error_context => 1000 );
+    my $doc = TeX::Processor::Parser::parse( id => "List $lname", document => $content, error_context => 1000 );
     $commands_map{$lname} = sub { return @{$doc} };
     push @tex_route_lists, "\\newcommand{\\routeList$lname}[0]{$content}\n";
 }
 
 my $book = read_file( "$global->{config}{template_directory}/book.tex", binmode => ':utf8' );
-$book = MyLaTeXParser::parse( document => $book );
-$book = MyLaTeX::map_commands(
+$book = TeX::Processor::Parser::parse( document => $book );
+$book = TeX::Processor::map_commands(
     list => $book,
     map  => \%commands_map
 );
 
 system "cd " . ( quotemeta $global->{config}{destination_directory} ) . "; rm -f book.*";
 
-write_file( "$global->{config}{destination_directory}/book.tex", encode( 'utf-8', MyLaTeXPrinter::latex( document => $book ) ) );
+write_file( "$global->{config}{destination_directory}/book.tex", encode( 'utf-8', TeX::Processor::Printer::latex( document => $book ) ) );
 
 system "cd "
     . ( quotemeta $global->{config}{destination_directory} )
