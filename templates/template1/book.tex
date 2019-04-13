@@ -19,19 +19,25 @@
 
 \newcommand{\length}[1]{длина #1~м}
 
-\newcommand{\geopoint}[4]{ \href{https://www.google.com/maps?q=#1,#2}{#4
-    \textcolor{gray}{(\ifthenelse{\equal{#3}{}}{}{выс.~\numprint{#3}~м, }коорд.~\nprounddigits{6}\numprint{#1}, \numprint{#2})}}}
-
-\newmdenv[]{MdEnv}
+\newcommand{\geopoint}[4]{#4
+  \footnote{
+    \href{https://www.google.com/maps?q=#1,#2}
+    {#4: \ifthenelse{\equal{#3}{}}{}{высота~\numprint{#3}~м, }координаты~\nprounddigits{6}\numprint{#1}, \numprint{#2}}
+  }
+}
 
 \newcommand{\routeKey}[1]{\textbf{#1}}
 
+\newmdenv[topline=false,bottomline=false,rightline=false,linewidth=2pt]{routeSectionEnv}
 \newcommand{\routeSection}[2]{
-  \begin{MdEnv}[topline=false,bottomline=false,rightline=false,linewidth=2pt]
+  \begin{routeSectionEnv}
+    \setcounter{mpfootnote}{\value{footnote}}
+    \renewcommand{\thempfootnote}{\arabic{mpfootnote}}
     \textbf{
       Участок #1:
     } #2
-  \end{MdEnv}
+    \setcounter{footnote}{\value{mpfootnote}}
+  \end{routeSectionEnv}
 }
 
 \title{Описания маршрутов}
