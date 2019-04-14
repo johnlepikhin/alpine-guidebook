@@ -46,7 +46,8 @@ my %config_schema = (
         default     => q{russian},
         description => q{Difficulty grading system. Known values: 'english', 'french', 'german', 'russian'},
         required    => 1,
-    } );
+    },
+);
 
 sub show_help {
     print <<'END'
@@ -70,6 +71,8 @@ END
 
 END
     }
+
+    return;
 }
 
 sub get_regions_list {
@@ -82,19 +85,17 @@ REGION:
         my $info = eval { from_json( read_file($info_file), { utf8 => 1 } ) };
         if ( ! defined $info ) {
             croak "cannot read $info_file: $@";
-            next;
         }
 
         foreach my $k (qw(name)) {
             if ( ! defined $info->{$k} ) {
                 croak "required key '$k' is not defined in $info_file";
-                next REGION;
             }
         }
 
-        $info->{info_file}     = $info_file;
-        $info->{region}        = ( split m{/}, $info_file )[-2];
-        $info->{path}          = dirname $info_file;
+        $info->{info_file} = $info_file;
+        $info->{region}    = ( split m{/}, $info_file )[-2];
+        $info->{path}      = dirname $info_file;
 
         $r{ $info->{region} } = $info;
     }
@@ -111,13 +112,11 @@ ROUTE:
         my $info = eval { from_json( read_file($info_file), { utf8 => 1 } ) };
         if ( ! defined $info ) {
             croak "cannot read $info_file: $@";
-            next;
         }
 
         foreach my $k (qw(peak category name title)) {
             if ( ! defined $info->{$k} ) {
                 croak "required key '$k' is not defined in $info_file";
-                next ROUTE;
             }
         }
 
