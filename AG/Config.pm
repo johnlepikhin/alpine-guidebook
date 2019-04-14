@@ -114,7 +114,7 @@ ROUTE:
             croak "cannot read $info_file: $@";
         }
 
-        foreach my $k (qw(peak category name title)) {
+        foreach my $k (qw(peak category name title authors)) {
             if ( ! defined $info->{$k} ) {
                 croak "required key '$k' is not defined in $info_file";
             }
