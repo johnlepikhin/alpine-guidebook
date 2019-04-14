@@ -28,15 +28,31 @@
   }
 }
 
-\newcommand{\routeKey}[1]{\textbf{#1}}
-
-\newmdenv[topline=false,bottomline=false,rightline=false,linewidth=2pt,nobreak=true]{routeSectionEnv}
+\newmdenv[topline=false,
+bottomline=false,
+rightline=false,
+linewidth=2pt,
+nobreak=true
+]{routeSectionEnv}
 \newcommand{\routeSection}[2]{
   \begin{routeSectionEnv}
+    \setlength{\parindent}{0ex}
     \setcounter{mpfootnote}{\value{footnote}}
     \renewcommand{\thempfootnote}{\arabic{mpfootnote}}
     \textbf{
       Участок #1:
+    } #2
+    \setcounter{footnote}{\value{mpfootnote}}
+  \end{routeSectionEnv}
+}
+
+\newcommand{\routeKey}[2]{
+  \begin{routeSectionEnv}[linecolor=red]
+    \setlength{\parindent}{0ex}
+    \setcounter{mpfootnote}{\value{footnote}}
+    \renewcommand{\thempfootnote}{\arabic{mpfootnote}}
+    \textbf{
+      Ключ маршрута, участок #1:
     } #2
     \setcounter{footnote}{\value{mpfootnote}}
   \end{routeSectionEnv}
