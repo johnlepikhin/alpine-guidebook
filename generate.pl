@@ -43,7 +43,9 @@ sub msg {
         my $command = "inkscape -D -d $q_dpi -z $q_svg -e ";
         my $png     = "$global->{config}{destination_directory}/" . ( md5_hex $command) . ".png";
         if ( ! -e $png || ( stat $png )[9] < ( stat $svg )[9] ) {
-            system $command . quotemeta $png;
+            if ( system $command . quotemeta $png ) {
+                croak "Failed to run inkscape: $!";
+            }
         }
 
         return $png;
@@ -70,7 +72,7 @@ sub retrieve_geopoints {
                     };
             }
 
-            return 0
+            return 0;
         } );
 
     my ( $altitudeMin, $altitudeMax );
@@ -140,7 +142,7 @@ sub generate_route {
         unified => $geopoints_mapper
     );
 
-    my ($geopoints, $altitudeMin, $altitudeMax) = retrieve_geopoints( description => $description );
+    my ( $geopoints, $altitudeMin, $altitudeMax ) = retrieve_geopoints( description => $description );
 
     my $category = AG::Categories::get( $global, $route->{category} );
     my $peaks = join q{, }, @{ $route->{peak} };
@@ -227,6 +229,4 @@ write_file( "$global->{config}{destination_directory}/book.tex", encode( 'utf-8'
 
 my $iter_compile = q{pdflatex -halt-on-error -file-line-error book.tex};
 
-system "cd "
-    . ( quotemeta $global->{config}{destination_directory} )
-    . "; $iter_compile && makeglossaries book.glo && $iter_compile"
+system "cd " . ( quotemeta $global->{config}{destination_directory} ) . "; $iter_compile && makeglossaries book.glo && $iter_compile"
