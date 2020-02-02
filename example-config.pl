@@ -14,4 +14,10 @@
             },
             route_template => 'route-template1.tex',
         },
+        routeListOther => {
+            routes_filter => sub {
+                $_->{region} ne 'ala-archa';
+            },
+            route_template => 'route-template1.tex',
+        },
     } }
