@@ -163,6 +163,8 @@ sub generate_route {
                 routeCategory    => sub { TeX::Processor::Make::text($category) },
                 routeType        => sub { TeX::Processor::Make::text( $route->{type} ) },
                 routeName        => sub { TeX::Processor::Make::text( $route->{name} ) },
+                routePioneer     => sub { TeX::Processor::Make::text( $route->{pioneer} ) },
+                routeYear        => sub { TeX::Processor::Make::text( $route->{year} ) },
                 routeRegionName  => sub { TeX::Processor::Make::text( $region->{name} ) },
                 routeEquipment   => sub { TeX::Processor::Make::text( $route->{equipment} ) },
                 routeAuthors     => sub { TeX::Processor::Make::text( join q{, }, sort @{ $route->{authors} } ) },
