@@ -1,87 +1,104 @@
 {
-    "name" : "Ала-Арча",
-    "geopoints" : {
-        "Lighthouse" : {
-            "latitude" : 42.5334709,
-            "longtitude" : 74.5314918,
-            "name" : "Light house"
-        },
-        "PeakUchitel" : {
-            "latitude" : 42.5377511,
-            "longtitude" : 74.5531805,
-            "name" : "п.~Учитель"
-        },
-        "UchitelUshi" : {
-            "latitude" : 42.5394225,
-            "longtitude" : 74.5481401,
-            "name" : "скальник «Уши»"
-        },
-        "Krokodil" : {
-            "latitude" : 42.524776,
-            "longtitude" : 74.5481401,
-            "name" : "морена «Крокодил»"
-        },
-        "Baichechekey" : {
-            "latitude" : 42.529423,
-            "longtitude" : 74.5552482,
-            "name" : "п.~Байчечекей"
-        },
-        "Televizor" : {
-            "latitude" : 42.5240208,
-            "longtitude" : 74.5383112,
-            "name" : "ск.~«Телевизор»"
-        },
-        "PeakRacek" : {
-            "latitude" : 42.5224549,
-            "longtitude" : 74.5388049,
-            "altitude" : 3930,
-            "name" : "п.~Рацека"
-        },
-        "StartOfKoshevoy" : {
-            "latitude" : 42.5404801,
-            "longtitude" : 74.5359404,
-            "name" : "выход в цирк п.~О.Кошевого"
-        },
-        "PeakKoshevoy" : {
-            "latitude" : 42.54745,
-            "longtitude" : 74.54495,
-            "name" : "п.~О.Кошевого"
-        },
-        "KoronaHut" : {
-            "latitude" : 42.512095,
-            "longtitude" : 74.5430397,
-            "name" : "Коронская хижина"
-        },
-        "PeakKoronaOne" : {
-            "latitude" : 42.50952066249,
-            "longtitude" : 74.56592739836,
-            "name" : "п.~Корона, 1-я башня"
-        },
-        "PeakIzyskatel" : {
-            "latitude" : 42.5056503,
-            "longtitude" : 74.5603686,
-            "name" : "п.~Изыскатель"
-        },
-        "PeakTekeTor" : {
-            "latitude" : 42.511645,
-            "longtitude" : 74.5224855,
-            "name" : "п.~Теке-Тор"
-        },
-        "PeakBoks" : {
-            "latitude" : 42.52269153908,
-            "longtitude" : 74.52404771901,
-            "name" : "п.~Бокс"
-        },
-        "PassTekeTor" : {
-            "latitude" : 42.5162324374,
-            "longtitude" : 74.5229197619,
-            "name" : "пер.~Теке-Тор"
-        },
-        "CampTomsk" : {
-            "latitude" : 42.5278039,
-            "longtitude" : 74.5465917,
-            "name" : "Томские стоянки"
-        }
-        
+  "name": "Ала-Арча",
+  "geopoints": {
+    "Lighthouse": {
+      "latitude": 42.5334709,
+      "longtitude": 74.5314918,
+      "name": "Light house"
+    },
+    "PeakUchitel": {
+      "latitude": 42.5377511,
+      "longtitude": 74.5531805,
+      "name": "п.~Учитель"
+    },
+    "UchitelUshi": {
+      "latitude": 42.5394225,
+      "longtitude": 74.5481401,
+      "name": "скальник «Уши»"
+    },
+    "Krokodil": {
+      "latitude": 42.5240303,
+      "longtitude": 74.536849,
+      "name": "морена «Крокодил»"
+    },
+    "Baichechekey": {
+      "latitude": 42.529423,
+      "longtitude": 74.5552482,
+      "name": "п.~Байчечекей"
+    },
+    "Televizor": {
+      "latitude": 42.5240208,
+      "longtitude": 74.5383112,
+      "name": "ск.~«Телевизор»"
+    },
+    "PeakRacek": {
+      "latitude": 42.5224549,
+      "longtitude": 74.5388049,
+      "altitude": 3930,
+      "name": "п.~Рацека"
+    },
+    "StartOfKoshevoy": {
+      "latitude": 42.5404801,
+      "longtitude": 74.5359404,
+      "name": "выход в цирк п.~О.Кошевого"
+    },
+    "PeakKoshevoy": {
+      "latitude": 42.54745,
+      "longtitude": 74.54495,
+      "name": "п.~О.Кошевого"
+    },
+    "KoronaHut": {
+      "latitude": 42.512095,
+      "longtitude": 74.5430397,
+      "name": "Коронская хижина"
+    },
+    "UchitelHut": {
+      "latitude": 42.51840,
+      "longtitude": 74.55155,
+      "name": "Учительская хижина (Наука)"
+    },
+    "PeakKoronaOne": {
+      "latitude": 42.50952066249,
+      "longtitude": 74.56592739836,
+      "name": "п.~Корона, 1-я башня",
+      "altitude": 4860
+    },
+    "PeakIzyskatel": {
+      "latitude": 42.5056503,
+      "longtitude": 74.5603686,
+      "name": "п.~Изыскатель"
+    },
+    "PeakTekeTor": {
+      "latitude": 42.511645,
+      "longtitude": 74.5224855,
+      "name": "п.~Теке-Тор"
+    },
+    "PeakBoks": {
+      "latitude": 42.52269153908,
+      "longtitude": 74.52404771901,
+      "name": "п.~Бокс"
+    },
+    "PassTekeTor": {
+      "latitude": 42.5162324374,
+      "longtitude": 74.5229197619,
+      "name": "пер.~Теке-Тор"
+    },
+    "CampTomsk": {
+      "latitude": 42.5278039,
+      "longtitude": 74.5465917,
+      "name": "Томские стоянки"
+    },
+    "PeakBailyanBashi": {
+      "latitude": 42.49546,
+      "longtitude": 74.56196,
+      "altitude": 4700,
+      "name": "п.~Байлян Баши"
+    },
+    "PeakSimagina": {
+      "latitude": 42.49504,
+      "longtitude": 74.55777,
+      "altitude": 4400,
+      "name": "п.~Симагина"
     }
+  }
 }

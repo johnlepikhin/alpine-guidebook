@@ -1,6 +1,6 @@
 \begin{samepage}
-  \section{\routeTitle}
-  \noindent \textbf{Категория сложности:} \routeCategory (\routeType)\\
+  \section{\routeTitle, \routeCategory}
+  % \noindent \textbf{Категория сложности:} \routeCategory (\routeType)\\
   \noindent \textbf{Название в классификаторе:} «\routeName»\\
   \noindent \textbf{Вариант набора железа:} \routeEquipment\\
   \noindent \textbf{Максимальная высота: } \ifthenelse{\equal{\routeAltitudeMax{}}{}}{неизвестна}{\routeAltitudeMax{}~м}
@@ -17,6 +17,5 @@
 }
 
 \routeDescription{}
-
-\vspace{1em}
+\nopagebreak[4]
 \hfill {\tinyАвторы описания: \routeAuthors}

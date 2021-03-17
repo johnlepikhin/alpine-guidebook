@@ -12,6 +12,7 @@ use lib "$FindBin::Bin/";
 
 use File::Slurp qw(read_file write_file);
 use Digest::MD5 qw(md5_hex);
+use Cwd 'abs_path';
 
 use AG::Config;
 use AG::Categories;
@@ -163,6 +164,8 @@ sub generate_route {
                 routeCategory    => sub { TeX::Processor::Make::text($category) },
                 routeType        => sub { TeX::Processor::Make::text( $route->{type} ) },
                 routeName        => sub { TeX::Processor::Make::text( $route->{name} ) },
+                routePioneer     => sub { TeX::Processor::Make::text( $route->{pioneer} ) },
+                routeYear        => sub { TeX::Processor::Make::text( $route->{year} ) },
                 routeRegionName  => sub { TeX::Processor::Make::text( $region->{name} ) },
                 routeEquipment   => sub { TeX::Processor::Make::text( $route->{equipment} ) },
                 routeAuthors     => sub { TeX::Processor::Make::text( join q{, }, sort @{ $route->{authors} } ) },
@@ -170,6 +173,7 @@ sub generate_route {
                 routeUIAAPath    => sub { TeX::Processor::Make::text($uiaa) },
                 routeAltitudeMin => sub { TeX::Processor::Make::text($altitudeMin) },
                 routeAltitudeMax => sub { TeX::Processor::Make::text($altitudeMax) },
+                routeDiskPath => sub { TeX::Processor::Make::text(abs_path($route->{path})) },
             },
         );
     };
